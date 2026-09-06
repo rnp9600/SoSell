@@ -81,23 +81,35 @@ Set **Settings → API → Exposed schemas** to include `catalog` too, so the
 dashboard and the role setting agree — a dashboard change can rewrite
 `db_schemas` and drop it, which brings the 404s straight back.
 
-## Open finding: the image bucket is not in step
+## The image bucket, and why it is worth re-checking
 
-Checked 2026-09-05, and this **gates serving photos from Supabase Storage**:
+**Resolved 2026-09-06.** The bucket now holds 1,808 objects — 904 photos and
+904 thumbnails — and the filename sets are byte-for-byte identical to the
+catalog repo's `images/`. All 900 photos the catalogue references are present,
+and the old `paxton-ci` / `paxton-alu` / `paxton-kw` folder names are gone.
+`NEXT_PUBLIC_IMAGE_SOURCE` therefore defaults to `bucket`.
 
-| | in the repo | in the `catalog-images` bucket |
-|---|---|---|
-| photos | 914 | 897 |
-| thumbnails | 904 | **0** |
-| total | 1,818 | 897 |
+It is recorded here because of how it got that way. The bucket had been
+carrying 897 photos and **zero** thumbnails. `sync-images.yml` exists precisely
+to prevent that, and had run once and reported success — but its
+`SUPABASE_SERVICE_KEY` secret was never added, so it warned and skipped, which
+is what it is designed to do. A green tick meant nothing had happened.
 
-900 distinct photo paths are referenced by the catalogue, and every product has
-at least one. The bucket is missing 17 photos and every single thumbnail.
+Two things worth keeping:
 
-The `sync-images.yml` Action in the catalog repo was written to fix exactly
-this and only triggers on a push touching `images/**`; there has not been one
-since it landed, so it has never actually run. Serving images from the bucket
-would today give a grid of broken thumbnails on every dealer's phone.
+- **Verify the count; do not trust the Action's status.** One query settles it:
 
-Resolve this before Phase 2 renders a product grid. Until then the image
-helper points at whatever source is known good.
+  ```sql
+  select count(*) filter (where name not like 'thumb/%') as photos,
+         count(*) filter (where name like 'thumb/%')     as thumbs
+    from storage.objects where bucket_id = 'catalog-images';
+  ```
+
+  To compare the sets rather than just the totals, hash both sides in byte
+  order — `string_agg(name, E'\n' order by name collate "C")` in SQL against
+  `LC_ALL=C sort` locally, with **no trailing newline** on the local side or
+  the hashes will differ for no reason.
+
+- **The failure would have been loud and simultaneous**: a grid of broken
+  thumbnails on every dealer's phone at once. That is why serving photos from
+  the bucket was gated on a count rather than on the Action being green.

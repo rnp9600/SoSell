@@ -61,7 +61,13 @@ lib/supabase/   server (cookies) · browser · admin (service role)
 supabase/       the schema, dumped and committed — see SCHEMA.md
 ```
 
-## Status
+## Where to pick it up
 
-Early. See `supabase/SCHEMA.md` for the state of the database and one open
-finding about the image bucket.
+- **`docs/PLAN.md`** — why this exists, every decision and its reason, the
+  schema still to build, and the phase order.
+- **`docs/STATUS.md`** — what is done, what is next, and how to run it.
+- **`supabase/SCHEMA.md`** — the state of the database and how to re-dump it.
+
+Phases 0 and 1 are done: the live schema is committed, the shell and the
+session work, and the catalogue reads live with a fallback. Phase 2 — the shop
+— is next.

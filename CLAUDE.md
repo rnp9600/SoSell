@@ -73,10 +73,11 @@ Everything is in the `catalog` schema, not `public` — every client must set
    deploy. The Supabase MCP tools reach the project by another route and do
    work.
 
-2. **The image bucket is not in step.** It holds 897 photos and zero
-   thumbnails, against 914 and 904 in the catalog repo. `NEXT_PUBLIC_IMAGE_SOURCE`
-   is therefore `legacy` until the sync Action has actually run. See
-   `supabase/SCHEMA.md`.
+2. **Photos are not in this repo.** They are served from the `catalog-images`
+   Supabase bucket, verified 2026-09-06 as holding all 1,808 objects with
+   filenames byte-for-byte identical to the catalog repo. It had drifted badly
+   once, so verify the count rather than trusting the sync Action's green tick
+   — the query is in `supabase/SCHEMA.md`.
 
 ## Commands
 
@@ -85,3 +86,11 @@ yarn dev              # localhost:3000
 yarn build
 yarn check:secrets    # where the service-role key may appear
 ```
+
+## Where the plan lives
+
+- **`docs/PLAN.md`** — every decision and its reason, the schema still to
+  build, the rules above in full, and the phase order.
+- **`docs/STATUS.md`** — what is done, what is next, and how to run it.
+
+Phases 0 and 1 are done. Phase 2 is the shop.
