@@ -17,6 +17,44 @@ That gap is now closed. Keep it closed: **the commit that changes the database
 is the commit that updates this file.** A dump with no date is a dump nobody
 trusts, so the date is in the filename and at the top of the file.
 
+## What has been applied
+
+`00_live_schema_2026-09-05.sql` is the **baseline** — the catalogue as it stood
+before SoSell. The files below are the delta, applied on top and recorded as
+Supabase migrations, so `supabase migration list` is the authority on what has
+run and these files are the explanation.
+
+| File | What it adds | Applied |
+|---|---|---|
+| `07_ledger.sql` | The collection domain: areas, invoices, payments, adjustments, routes, day sheets, issues, the voucher counter and the bin — plus the ledger columns on `allowlist` | ✅ 2026-09-06 |
+| `08_ledger_views.sql` | The arithmetic: FY helpers, atomic receipt numbering, FIFO aging, `customer_balances`, `customer_ledger`, and the five `my_*` views a dealer reads | ✅ 2026-09-06 |
+| `09_ledger_rpc.sql` | Every write door, all `security definer`, all reading the caller from the JWT | ✅ 2026-09-06 |
+| `10_ledger_rls.sql` | The policies and grants that make the above mean something | ✅ 2026-09-06 |
+
+**There was no data migration.** The prototype these came from was never
+deployed, and its only rows came from a seeder that is deliberately not carried
+over. Real ledger data arrives once, from the office's spreadsheet, through an
+import with a dry run.
+
+### Verified when applied
+
+- **The worked example**: ₹125,000 opening + ₹25,000 invoice − ₹26,000 payments
+  = **₹124,000**.
+- **The aging fix**: a dealer with a 2024 invoice fully paid and a fresh
+  September one reads **On Track at 5 days**. The old arithmetic aged from the
+  oldest invoice *ever raised* and would have called the same customer
+  **Critical at ~827 days** — so the flag fired hardest on the best customers,
+  which is why it meant nothing.
+- **The cheque lifecycle**: pending → ₹124,000 outstanding with ₹10,000 held
+  separately; cleared → ₹114,000; **bounced → back to ₹124,000**. That last
+  transition is one the prototype could not express at all.
+- **Access is the database**: signed in as one dealer, `catalog.invoices`
+  returns exactly one row — their own — and `can_see_ledger()` for another
+  dealer returns false.
+
+Every test row was removed afterwards. The receipt counter was deliberately
+*not* reset: a number is never reused, and that holds for test rows too.
+
 ## Re-taking it
 
 Run these four queries and paste each result into the matching section. They
