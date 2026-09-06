@@ -1,0 +1,319 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SoSell — the token layer.
+
+   Carried over from the catalogue's app.css, with the values converted from
+   hex to HSL channels so Tailwind's `hsl(var(--x) / <alpha-value>)` opacity
+   modifiers work. The conversion was done mechanically, not by eye.
+
+   Two attributes on <html> decide everything:
+     data-theme   sky | teal | emerald | charcoal
+     data-mode    light | dark   ("auto" is resolved before it is stamped,
+                                  never written to the DOM)
+
+   EVERY block below sets the SAME token list. A component may therefore
+   assume every token exists in every combination, which is what stops a
+   theme from half-applying. If you add a token, add it to all eight.
+
+     --brand        the accent: buttons, links, the active tab
+     --brand-ink    a step darker, for hover
+     --brand-wash   a tint, for chips and quiet notices
+     --on-brand     text on a brand-FILLED surface — it inverts with the
+                    palette, which is why the hero button can use it as its
+                    background with --brand as its text and read correctly
+                    both ways round without a single dark-mode override
+     --gold         the second colour: offers, ratings, MRP
+     --bg --surface --surface-2      page, cards, insets
+     --line --line-strong            borders
+     --ink --ink-2 --ink-3           body, secondary, tertiary
+     --ok --warn --bad (+ -wash)     states
+
+   A component never hard-codes a colour for a mode.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  :root {
+    --r-sm: 8px; --r: 12px; --r-lg: 18px; --r-xl: 26px; --r-full: 999px;
+    --radius: 12px;                 /* shadcn reads this one */
+
+    /* next/font sets --font-inter and --font-plex-mono on <html>; the stacks
+       below are what shows while the webfont is still loading, and if it
+       never arrives. */
+    --sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI',
+            Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    /* Bars the layout has to reserve room for. Set once, read by everything
+       that sits at an edge, so nothing ever lands under the tab bar again. */
+    --tabbar: 58px;
+    --header: 56px;
+    --dock: 0px;                    /* raised by the cart bar when showing */
+    --page: 1180px;                 /* desktop cap; phones never reach it */
+    --safe-b: env(safe-area-inset-bottom, 0px);
+    --safe-t: env(safe-area-inset-top, 0px);
+
+    --shadow-1: 0 1px 2px rgba(16,30,40,.06), 0 1px 3px rgba(16,30,40,.05);
+    --shadow-2: 0 4px 12px rgba(16,30,40,.08), 0 1px 3px rgba(16,30,40,.05);
+    --shadow-3: 0 12px 32px rgba(16,30,40,.14), 0 2px 8px rgba(16,30,40,.06);
+  }
+
+  [data-mode="dark"] {
+    --shadow-1: 0 1px 2px rgba(0,0,0,.4);
+    --shadow-2: 0 4px 12px rgba(0,0,0,.45);
+    --shadow-3: 0 12px 32px rgba(0,0,0,.55);
+  }
+
+  /* ---- sky (default: the colour the firm has been using) ---------- */
+  :root,
+  [data-theme="sky"] {
+    --brand: 208 56% 42%;
+    --brand-ink: 206 56% 32%;
+    --brand-wash: 207 75% 94%;
+    --on-brand: 0 0% 100%;
+    --gold: 173 82% 30%;
+    --gold-wash: 170 49% 90%;
+    --bg: 207 73% 97%;
+    --surface: 0 0% 100%;
+    --surface-2: 207 77% 95%;
+    --line: 206 52% 89%;
+    --line-strong: 207 51% 82%;
+    --ink: 211 62% 13%;
+    --ink-2: 209 23% 43%;
+    --ink-3: 208 23% 60%;
+    --ok: 150 64% 29%;
+    --ok-wash: 143 43% 92%;
+    --warn: 36 82% 32%;
+    --warn-wash: 36 80% 92%;
+    --bad: 3 71% 41%;
+    --bad-wash: 6 71% 95%;
+  }
+  [data-theme="sky"][data-mode="dark"] {
+    --brand: 204 76% 68%;
+    --brand-ink: 203 80% 78%;
+    --brand-wash: 207 54% 15%;
+    --on-brand: 206 62% 10%;
+    --gold: 171 53% 55%;
+    --gold-wash: 172 53% 12%;
+    --bg: 208 35% 7%;
+    --surface: 210 29% 11%;
+    --surface-2: 208 25% 15%;
+    --line: 207 25% 19%;
+    --line-strong: 208 22% 27%;
+    --ink: 206 47% 93%;
+    --ink-2: 207 23% 68%;
+    --ink-3: 208 15% 53%;
+    --ok: 146 50% 57%;
+    --ok-wash: 146 45% 13%;
+    --warn: 36 66% 64%;
+    --warn-wash: 36 48% 14%;
+    --bad: 5 82% 72%;
+    --bad-wash: 5 40% 16%;
+  }
+
+  /* ---- teal (what V4 was built in; replaced copper) ---------------- */
+  [data-theme="teal"] {
+    --brand: 171 77% 24%;
+    --brand-ink: 171 78% 18%;
+    --brand-wash: 167 35% 92%;
+    --on-brand: 0 0% 100%;
+    --gold: 40 61% 43%;
+    --gold-wash: 41 64% 91%;
+    --bg: 120 6% 97%;
+    --surface: 0 0% 100%;
+    --surface-2: 160 10% 94%;
+    --line: 156 9% 89%;
+    --line-strong: 158 8% 81%;
+    --ink: 168 29% 10%;
+    --ink-2: 166 9% 39%;
+    --ink-3: 164 7% 57%;
+    --ok: 150 64% 29%;
+    --ok-wash: 146 40% 92%;
+    --warn: 35 79% 34%;
+    --warn-wash: 37 79% 92%;
+    --bad: 3 71% 41%;
+    --bad-wash: 6 71% 95%;
+  }
+  [data-theme="teal"][data-mode="dark"] {
+    --brand: 170 50% 54%;
+    --brand-ink: 170 56% 67%;
+    --brand-wash: 171 51% 15%;
+    --on-brand: 170 71% 8%;
+    --gold: 40 67% 62%;
+    --gold-wash: 43 55% 13%;
+    --bg: 160 17% 7%;
+    --surface: 165 15% 11%;
+    --surface-2: 164 15% 14%;
+    --line: 162 15% 17%;
+    --line-strong: 160 12% 24%;
+    --ink: 160 15% 92%;
+    --ink-2: 162 10% 66%;
+    --ink-3: 161 6% 51%;
+    --ok: 146 50% 57%;
+    --ok-wash: 144 41% 13%;
+    --warn: 36 66% 64%;
+    --warn-wash: 36 48% 14%;
+    --bad: 5 82% 72%;
+    --bad-wash: 5 40% 16%;
+  }
+
+  /* ---- emerald ---------------------------------------------------- */
+  [data-theme="emerald"] {
+    --brand: 151 72% 29%;
+    --brand-ink: 150 75% 22%;
+    --brand-wash: 143 37% 91%;
+    --on-brand: 0 0% 100%;
+    --gold: 43 54% 43%;
+    --gold-wash: 45 59% 87%;
+    --bg: 144 26% 96%;
+    --surface: 0 0% 100%;
+    --surface-2: 145 27% 91%;
+    --line: 143 22% 88%;
+    --line-strong: 144 19% 79%;
+    --ink: 156 37% 11%;
+    --ink-2: 150 11% 40%;
+    --ink-3: 146 11% 58%;
+    --ok: 150 64% 29%;
+    --ok-wash: 145 40% 92%;
+    --warn: 37 80% 31%;
+    --warn-wash: 39 70% 91%;
+    --bad: 3 71% 41%;
+    --bad-wash: 6 71% 95%;
+  }
+  [data-theme="emerald"][data-mode="dark"] {
+    --brand: 143 55% 59%;
+    --brand-ink: 143 58% 71%;
+    --brand-wash: 151 52% 12%;
+    --on-brand: 140 75% 8%;
+    --gold: 42 61% 61%;
+    --gold-wash: 45 52% 12%;
+    --bg: 150 19% 6%;
+    --surface: 142 16% 10%;
+    --surface-2: 147 16% 14%;
+    --line: 140 14% 17%;
+    --line-strong: 136 13% 23%;
+    --ink: 135 20% 92%;
+    --ink-2: 145 12% 65%;
+    --ink-3: 138 10% 52%;
+    --ok: 146 50% 57%;
+    --ok-wash: 146 45% 13%;
+    --warn: 36 66% 64%;
+    --warn-wash: 36 48% 14%;
+    --bad: 5 82% 72%;
+    --bad-wash: 5 40% 16%;
+  }
+
+  /* ---- charcoal (the quiet one: no colour but the accent) --------- */
+  [data-theme="charcoal"] {
+    --brand: 208 16% 29%;
+    --brand-ink: 208 18% 21%;
+    --brand-wash: 206 17% 92%;
+    --on-brand: 0 0% 100%;
+    --gold: 40 52% 36%;
+    --gold-wash: 42 52% 90%;
+    --bg: 210 11% 96%;
+    --surface: 0 0% 100%;
+    --surface-2: 210 12% 94%;
+    --line: 206 13% 89%;
+    --line-strong: 207 11% 80%;
+    --ink: 210 18% 11%;
+    --ink-2: 208 10% 38%;
+    --ink-3: 208 9% 57%;
+    --ok: 150 64% 29%;
+    --ok-wash: 144 37% 92%;
+    --warn: 38 76% 31%;
+    --warn-wash: 41 64% 91%;
+    --bad: 3 71% 41%;
+    --bad-wash: 6 71% 95%;
+  }
+  [data-theme="charcoal"][data-mode="dark"] {
+    --brand: 206 24% 70%;
+    --brand-ink: 206 30% 82%;
+    --brand-wash: 208 20% 17%;
+    --on-brand: 212 31% 10%;
+    --gold: 40 54% 62%;
+    --gold-wash: 43 35% 13%;
+    --bg: 210 20% 8%;
+    --surface: 210 17% 11%;
+    --surface-2: 208 17% 15%;
+    --line: 208 17% 19%;
+    --line-strong: 207 15% 27%;
+    --ink: 210 22% 93%;
+    --ink-2: 207 12% 67%;
+    --ink-3: 207 8% 53%;
+    --ok: 146 50% 57%;
+    --ok-wash: 146 45% 13%;
+    --warn: 36 66% 64%;
+    --warn-wash: 36 48% 14%;
+    --bad: 5 82% 72%;
+    --bad-wash: 5 40% 16%;
+  }
+
+  /* ═════════════════════════════════════════════════════════════════════
+     shadcn, derived. Never assigned a colour of its own.
+
+     Because these refer to variables the palette blocks above redefine, all
+     48 shadcn components repaint correctly in all eight combinations with
+     zero per-theme overrides — and the invariant survives: the palette
+     blocks are still the only place a value is written.
+     ═════════════════════════════════════════════════════════════════════ */
+  :root {
+    --background: var(--bg);            --foreground: var(--ink);
+    --card: var(--surface);             --card-foreground: var(--ink);
+    --popover: var(--surface);          --popover-foreground: var(--ink);
+    --primary: var(--brand);            --primary-foreground: var(--on-brand);
+    --secondary: var(--surface-2);      --secondary-foreground: var(--ink);
+    --muted: var(--surface-2);          --muted-foreground: var(--ink-2);
+    --accent: var(--brand-wash);        --accent-foreground: var(--brand-ink);
+    --destructive: var(--bad);          --destructive-foreground: 0 0% 100%;
+    --border: var(--line);
+    --input: var(--line);
+    --ring: var(--brand);
+  }
+
+  * { @apply border-border; }
+
+  html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+  /* Reading size. Everything is in rem so one root change scales headings,
+     prices and buttons together — the dealers who asked for this are reading
+     a phone at arm's length in a shop. */
+  html[data-fs="s"]  { font-size: 15px; }
+  html[data-fs="l"]  { font-size: 17.5px; }
+  html[data-fs="xl"] { font-size: 19px; }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--sans);
+    margin: 0;
+    min-height: 100dvh;
+    overscroll-behavior-y: none;
+  }
+
+  /* Someone who has asked for less movement gets less movement — whether they
+     asked us, in Settings, or asked their phone. */
+  html[data-motion="none"] *,
+  html[data-motion="none"] *::before,
+  html[data-motion="none"] *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .001ms !important;
+      transition-duration: .001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--brand));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  ::selection { background: hsl(var(--brand-wash)); color: hsl(var(--brand-ink)); }
+}
