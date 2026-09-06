@@ -1,7 +1,8 @@
 import { Inter, IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
 import { APP, FIRM } from '@/lib/config';
-import { THEME_BOOTSTRAP } from '@/lib/theme';
+import { THEME_BOOTSTRAP, IMG_FALLBACK } from '@/lib/theme';
+import { RegisterSW } from '@/components/pm/register-sw';
 
 // Self-hosted through next/font, which also removes the render-blocking
 // Google Fonts <link> the catalogue currently carries.
@@ -43,8 +44,12 @@ export default function RootLayout({ children }) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
+        <script dangerouslySetInnerHTML={{ __html: IMG_FALLBACK }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <RegisterSW />
+      </body>
     </html>
   );
 }

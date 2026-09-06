@@ -1,0 +1,14 @@
+{
+  "crons": [
+    {
+      "//": "09:30 IST. The reminder ladder — see app/api/cron/reminders.",
+      "path": "/api/cron/reminders",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "//": "Drains the push outbox. The composer also fires it directly; this is the safety net for anything that did not go out.",
+      "path": "/api/push/send",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}

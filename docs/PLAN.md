@@ -301,13 +301,14 @@ domain moves once, after Phase 3.
 |---|---|---|
 | **0** | Record what exists | ✅ done |
 | **1** | Shell and identity | ✅ done |
-| **2** | The shop, live from the database | next |
-| **3** | Cart, checkout, orders → **cutover** | |
-| **4** | The ledger, read-only, for dealers | |
-| **5** | The office ledger and collections | |
-| **6** | Office catalogue tools | |
-| **7** | Tasks, composer, push, reminders | |
-| **8** | The `v3`-only features; retire `catalog` | |
+| **2** | The shop, live from the database | ✅ done |
+| **3** | Cart, checkout, orders | ✅ done |
+| **4** | The ledger for dealers | ✅ done |
+| **5** | The office ledger and collections | ✅ done |
+| **6** | Office catalogue tools | not started |
+| **7** | Tasks, composer, push, reminders | ✅ done |
+| **8** | The `v3`-only features; retire `catalog` | not started |
+| — | **Cutover** — needs the session shim first | not done |
 
 Two orderings are deliberate and worth not reshuffling:
 

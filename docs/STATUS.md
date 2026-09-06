@@ -84,69 +84,95 @@ table cache, needs `notify pgrst, 'reload schema'`.
 
 ---
 
-## Next: Phase 2 — the shop, live from the database
+## Also done
 
-Build these routes, in roughly this order. Everything reads
-`getCatalogue()` from `lib/catalogue/index.js`; nothing needs new schema.
+### Phase 2 and 3 — the shop
 
-| Route | What it is |
+Fifteen customer-facing routes: home, shop, category, search, product, saved,
+cart, checkout, confirmation, orders, order detail, repeat, account, settings,
+help, join, and `/p/[slug]` — the WhatsApp share link, at the same address it
+has always had.
+
+**Search is a real port**, in `lib/search.js`: three layers that escalate only
+when a literal match returns nothing. `tests/search.test.mjs` pins the
+behaviours against the real 743 products, including the two that look like
+quirks and are not — there is no `ch → c` fold (it turns *copper* into
+*chopper*), and the first-letter penalty is what makes "bottel" find *bottles*
+rather than *hotels*.
+
+`api/p.js` is gone; a server component with `generateMetadata` emits the OG
+tags natively. **Its security rule came with it and is written at the top of
+the file: that page is public, so MRP only, never the dealer rate.**
+
+### Phase 4 and 5 — the ledger
+
+Four migrations, applied and verified (see `supabase/SCHEMA.md`). Both bugs
+fixed rather than ported — FIFO aging, and one source of truth for a cheque.
+
+Dealer screens: `/account/ledger`, `/bills`, `/cheques`.
+Office screens: dashboard, customers, customer detail with a payment pad,
+routes, the day sheet, cheques to bank, and one approvals queue.
+
+Every figure comes from a view. No screen does arithmetic.
+
+### Phase 7 — tasks and messages
+
+`catalog.tasks` (a schedule is the shape of the week; a task is what came up),
+the office task board, and a notification composer that can address named
+people, a role, a department, a route's shops, or everyone — with the reach
+shown *before* sending.
+
+**The reminder ladder is built**, in `app/api/cron/reminders`. The prototype
+had eighteen editable templates and no scheduler and no code that read one;
+`catalog.render_template()` and this cron are what finally make them do
+something. `reminder_log` is keyed on (customer, rung, financial year), so a
+200-day customer is told once per rung rather than every morning, and only the
+*highest* rung crossed is sent so nobody gets six messages on the first run.
+
+Web push: `push_subscriptions`, `push_outbox`, and a drain route. The
+permission is asked **on the notifications screen, never on load** — a prompt
+that appears the moment somebody opens a shop is the fastest way to be denied
+permanently, and a denial is final.
+
+---
+
+## Three bugs found by running it, not reading it
+
+1. **`span()` printed `₹0`.** It converted to `Number` before dropping nulls,
+   and `Number(null)` is `0`, which passes `isFinite`. So "this product has no
+   printed MRP" rendered as "MRP ₹0" — the exact failure the `—` rule exists to
+   prevent, on a product sheet. `tests/money.test.mjs` pins it.
+2. **`/v4/` was redirecting.** Next normalises a trailing slash with a 308
+   *before* rewrites run. An installed icon pinned to that scope degrades to a
+   browser tab the moment it redirects. `skipTrailingSlashRedirect` fixes it.
+3. **The image fallback did not work before hydration.** React's `onError`
+   only fires once the handler is attached, and on a slow connection the image
+   has already failed by then — leaving the browser's broken-image glyph. Fixed
+   with a capture-phase listener installed before first paint (`IMG_FALLBACK`
+   in `lib/theme.js`); the React handler stays as the post-hydration half.
+
+## What is left
+
+| | |
 |---|---|
-| `app/(shop)/page.js` | home: search, notices, promo hero, categories, buy-again, featured, recently viewed |
-| `app/(shop)/shop/page.js` · `shop/[cat]/page.js` | categories → sub-groups → grid, with sort |
-| `app/(shop)/search/page.js` | typo-tolerant search, live suggestions, recent searches |
-| `app/(shop)/product/[slug]/page.js` | swipe gallery, role-aware price, size rows with steppers, specs, ratings, share, related |
-| `app/(shop)/saved/page.js` | per-account, on the phone, works offline |
-| `app/(shop)/promo/[id]/page.js` | one config-driven strip |
-| `app/p/[slug]/page.js` | the WhatsApp preview URL — **address preserved exactly** |
+| **Office catalogue tools** | Port `admin.html`, `orders.html`, `exchange.html` — products, rates, taxonomy, noticeboard, reviews, the order book, the stock exchange. `/office/catalogue` is linked from the dashboard and not yet built. |
+| **The Excel import** | `import_customers(rows, dry)` — the riskiest data step, because it merges the office's real ledger into the existing `allowlist` rows on phone. **Dry run, eyeball the diff, then run it.** |
+| **Seed the receipt counter** | Going live mid-year means setting `voucher_sequence` from the last number the office actually issued, or the app starts at `Mob/1` beside a paper book at `Mob/812`. A human should read the number aloud. |
+| **The four `v3`-only features** | Writing a review, editing your own profile and photo, the consumer shop directory, and retail mode. See `PLAN.md`. |
+| **`aging_days_legacy`** | Ship the old and new aging side by side for a week with a one-screen explanation, so the office can see *why* loyal customers moved from Critical to On Track and say whether they agree. |
+| **Deploy** | Nothing has been deployed. The live catalogue read can only be confirmed from a deploy — see environment fact 1 above. |
 
-### What to build first, and why
+## Before the cutover
 
-`components/pm/` is empty and Phase 2 cannot start without it. Build in this
-order, because each depends on the last:
+Two things in `PLAN.md`'s risk list are **not optional** and are not done:
 
-1. **`Price`** — renders the four shapes `priceView()` returns
-   (`{locked,was}` · `{ask}` · `{now,was,tag}`). Get the `—` rule right here
-   and it is right everywhere.
-2. **`ProductCard`** — the one tile used in every view. Badge chips
-   (Featured / Offer / Out of stock) go in a **row under the photo**, not
-   overlaid. Action row is `margin-top:auto` so cards in a row line up.
-3. **`Stepper`** — the only quantity control in the app; steps by MOQ.
-4. **`Sheet`** — bottom sheet for decisions. A sheet is not a route.
-5. **`TabBar`** and **`CartBar`** — the cart bar raises `--dock` so nothing
-   lands under the tab bar.
-
-### Search is not a `LIKE` query
-
-Port it from `catalog/core.js` §4 — three layers, escalating **only** when a
-literal match returns zero hits:
-
-1. ~25 curated trade synonyms (`ss` → stainless steel, `kadai`, `appam`,
-   `tadka`…).
-2. A phonetic fold — `ph→f`, `sh→s`, `Xh→X`, `w→v`, `ee→i`, `oo→u`, doubled
-   letters collapsed. **There is deliberately no `ch→c` rule**: it folds
-   *copper* into *chopper* and "coper" then returns 33 choppers.
-3. Bounded Damerau-Levenshtein, ranked rather than nearest-wins — the
-   first-letter penalty is what makes "bottel" find *bottles* rather than
-   *hotels*.
-
-It **never corrects silently**: it says "Showing results for **tawa**" and
-offers the literal search back. Zero-result searches are logged to
-`catalog.events`, and that log is the input to "what should we stock".
-
-### The one that is easy to get wrong
-
-`app/p/[slug]/page.js` replaces the catalog repo's `api/p.js`. A Next server
-component with `generateMetadata` emits real OG tags natively, so the whole
-workaround disappears — but **its security rule comes with it: that page is
-public and has no sign-in, so MRP only, never the dealer rate.** It once
-printed the DP column, which meant forwarding a product to a customer forwarded
-your buying price. Same rule for the WhatsApp text it composes.
-
-### Do not ship a service worker yet
-
-Not before Phase 3. A cache-first shell worker written for a no-build site is
-actively wrong for Next, whose asset names are content-hashed. See risk 3 in
-`PLAN.md`.
+1. **The session shim.** Read `v3_sb_auth` from localStorage once, call
+   `setSession()` so the cookie is written, then remove the key. Without it,
+   every dealer is signed out on cutover day.
+   **Acceptance test**: fill a basket on the live site, deploy SoSell to the
+   same hostname, reload — basket intact, still signed in.
+2. **Never redirect `/v4/`.** Already handled, and worth re-checking after any
+   change to `next.config.js`.
 
 ---
 
@@ -157,11 +183,14 @@ yarn install
 cp .env.example .env.local     # fill in the anon key
 yarn dev                       # localhost:3000
 yarn build
-yarn check:secrets
+yarn check:secrets             # where the service-role key may appear
+node tests/search.test.mjs     # 14 checks
+node tests/money.test.mjs      # 16 checks
+node tests/visual.mjs          # a real browser, all 8 themes
 ```
 
-Locally the catalogue will always say "the published file (database
-unreachable)" — see environment fact 1 above. To exercise the roles, set
+Locally the catalogue always says "the published file (database unreachable)" —
+see environment fact 1. To walk the roles, set
 `NEXT_PUBLIC_ENABLE_TEST_NUMBERS=1` and sign in with one of the five test
 numbers, PIN `765432`:
 
@@ -173,17 +202,16 @@ numbers, PIN `765432`:
 | 9686754023 | end customer, belongs to the test dealer |
 | 9686754024 | end customer, no shop yet |
 
-## What to check before calling any phase done
+## What to check before calling anything done
 
 - **Roles**: walk every screen as all five test numbers. The same product must
   show a read-only view, a stepper, and a shop price respectively.
-- **Access is the database, not the page**: for each new table, attempt a read
-  and a write as the wrong role and confirm Postgres refuses — not that the UI
-  hid the button.
-- **On a phone, cold**: open a shared product link, press Back, and land on the
-  catalogue rather than out of the browser. Product → product → cart → Back ×3
-  retraces to home. Network off, and the catalogue still opens.
+- **Access is the database, not the page**: attempt a read and a write as the
+  wrong role and confirm *Postgres* refuses — not that the UI hid the button.
+  A dealer must not see another dealer's ledger; a collector must lose access
+  the moment they come off the route. Both were verified when the migrations
+  were applied; re-check after any policy change.
+- **On a phone, cold**: open a shared product link, press Back, land on the
+  catalogue rather than out of the browser. Network off, and the catalogue
+  still opens.
 - **Never `₹0`, never `₹NaN`** for the 127 products with no rate.
-- **The money** (from Phase 4): reproduce ₹125,000 opening + ₹25,000 invoice −
-  ₹26,000 payments = ₹124,000, and confirm a PDC cheque is excluded until
-  marked cleared and that a bounced one puts the money back.
