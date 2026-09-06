@@ -38,11 +38,17 @@ const nextConfig = {
       { source: '/v2/:path*', destination: '/', permanent: false },
     ];
   },
+  // Next normalises a trailing slash with a 308 BEFORE rewrites run, which
+  // turned /v4/ into exactly the redirect this must never be. Turning the
+  // normalisation off is what keeps /v4/ a rewrite.
+  skipTrailingSlashRedirect: true,
+
   async rewrites() {
     return [
       // NEVER a redirect. An installed icon pinned to scope /v4/ degrades to a
       // browser tab in a frozen theme the moment this redirects — that has
-      // already happened once.
+      // already happened once, and the people affected are the ones who liked
+      // the app enough to install it.
       { source: '/v4', destination: '/' },
       { source: '/v4/', destination: '/' },
       { source: '/v4/:path*', destination: '/:path*' },
