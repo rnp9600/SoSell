@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Bell } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { supabaseBrowser } from '@/lib/supabase/browser';
 import { Button } from '@/components/ui/button';
 
@@ -69,7 +69,7 @@ export default function MarkRead({ ids }) {
         office.
       </p>
       <Button size="sm" disabled={state === 'asking'} onClick={enable}>
-        <Bell className="size-4" />
+        <Icon name="bell" className="size-4" />
         {state === 'asking' ? 'Asking…' : 'Turn on notifications'}
       </Button>
     </div>

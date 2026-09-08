@@ -2,16 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutGrid, Search, Receipt, User } from 'lucide-react';
+import { Icon } from './icon';
 import { useCart } from '@/lib/cart';
 import { cn } from '@/lib/utils';
 
 const TABS = [
-  { href: '/', label: 'Home', icon: Home, exact: true },
-  { href: '/shop', label: 'Shop', icon: LayoutGrid },
-  { href: '/search', label: 'Search', icon: Search },
-  { href: '/orders', label: 'Orders', icon: Receipt, badge: true },
-  { href: '/account', label: 'Account', icon: User },
+  { href: '/', label: 'Home', icon: 'home', exact: true },
+  { href: '/shop', label: 'Shop', icon: 'grid' },
+  { href: '/search', label: 'Search', icon: 'search' },
+  // 'receipt' is a slip of paper with a torn edge — the catalogue's own icon.
+  // A generic library's receipt has a dollar sign in it, which is wrong on an
+  // app that trades in rupees.
+  { href: '/orders', label: 'Orders', icon: 'receipt', badge: true },
+  { href: '/account', label: 'Account', icon: 'user' },
 ];
 
 /** Five tabs, in thumb reach.
@@ -30,7 +33,7 @@ export function TabBar() {
       style={{ paddingBottom: 'var(--safe-b)' }}
     >
       <ul className="mx-auto flex max-w-page">
-        {TABS.map(({ href, label, icon: Icon, exact, badge }) => {
+        {TABS.map(({ href, label, icon, exact, badge }) => {
           const on = exact ? pathname === href : pathname.startsWith(href);
           return (
             <li key={href} className="flex-1">
@@ -42,7 +45,7 @@ export function TabBar() {
                   on ? 'text-brand' : 'text-ink-3',
                 )}
               >
-                <Icon className="size-5" />
+                <Icon name={icon} className="size-5" />
                 <span className="text-[0.625rem] font-semibold">{label}</span>
                 {badge && count > 0 && (
                   <span className="absolute right-1/2 top-1.5 translate-x-3 rounded-full bg-brand px-1.5 text-[0.625rem] font-bold text-on-brand">

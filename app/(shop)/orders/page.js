@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Receipt } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { supabaseServer, currentUser } from '@/lib/supabase/server';
 import { Header } from '@/components/pm/header';
 import { Empty } from '@/components/pm/empty';
@@ -27,7 +27,7 @@ export default async function OrdersPage() {
       <main>
         <Header title="Your orders" />
         <Empty
-          icon={Receipt}
+          icon={(p) => <Icon name="receipt" {...p} />}
           title="Sign in to see your orders"
           body="Your order history is tied to your number."
           action={<Button asChild><Link href="/signin?next=/orders">Sign in</Link></Button>}
@@ -52,7 +52,7 @@ export default async function OrdersPage() {
       <Header title="Your orders" />
       {list.length === 0 ? (
         <Empty
-          icon={Receipt}
+          icon={(p) => <Icon name="receipt" {...p} />}
           title="No orders yet"
           body="When you place one it will be here, with where it has got to."
           action={<Button asChild><Link href="/shop">Browse the shop</Link></Button>}

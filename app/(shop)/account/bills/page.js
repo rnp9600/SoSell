@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { FileText } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { supabaseServer, currentUser, isDealer } from '@/lib/supabase/server';
 import { Header } from '@/components/pm/header';
 import { Empty } from '@/components/pm/empty';
@@ -24,7 +24,7 @@ export default async function BillsPage() {
       <Header title="Your bills" back="/account/ledger" />
 
       {bills.length === 0 ? (
-        <Empty icon={FileText} title="No bills yet"
+        <Empty icon={(p) => <Icon name="pdf" {...p} />} title="No bills yet"
                body="Every bill raised against your account will be listed here." />
       ) : (
         <>

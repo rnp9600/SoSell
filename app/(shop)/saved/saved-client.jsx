@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Heart } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { useSaved } from '@/lib/saved';
 import { Header } from '@/components/pm/header';
 import { ProductGrid } from '@/components/pm/product-card';
@@ -21,7 +21,7 @@ export default function SavedClient({ products }) {
           <ProductGrid products={list} />
         ) : (
           <Empty
-            icon={Heart}
+            icon={(p) => <Icon name="heart" {...p} />}
             title="Nothing saved yet"
             body="Tap the heart on any product and it will be here — on this phone, and it works without a signal."
             action={

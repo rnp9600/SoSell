@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Heart, Share2 } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { ProductImage } from '@/components/pm/product-image';
 import { Price } from '@/components/pm/price';
 import { Stepper } from '@/components/pm/stepper';
@@ -59,7 +59,8 @@ export default function ProductDetail({ product: p, role, offer }) {
             onClick={() => toggle(p.slug)}
             className="grid size-11 place-items-center rounded-full bg-surface/85 backdrop-blur"
           >
-            <Heart className={cn('size-5', saved ? 'fill-bad text-bad' : 'text-ink-3')} />
+            <Icon name="heart" fill={saved ? 'currentColor' : 'none'}
+                  className={cn('size-5', saved ? 'text-bad' : 'text-ink-3')} />
           </button>
           <button
             type="button"
@@ -67,7 +68,7 @@ export default function ProductDetail({ product: p, role, offer }) {
             onClick={share}
             className="grid size-11 place-items-center rounded-full bg-surface/85 text-ink-3 backdrop-blur"
           >
-            <Share2 className="size-5" />
+            <Icon name="share" className="size-5" />
           </button>
         </div>
       </div>

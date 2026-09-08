@@ -1,6 +1,6 @@
 'use client';
 
-import { Minus, Plus } from 'lucide-react';
+import { Icon } from './icon';
 import { useCart } from '@/lib/cart';
 import { cn } from '@/lib/utils';
 
@@ -26,7 +26,7 @@ export function Stepper({ slug, size, moq = 1, className }) {
           className,
         )}
       >
-        <Plus className="size-4" />
+        <Icon name="plus" className="size-4" />
         Add
         {moq > 1 && <span className="opacity-70">· {moq}</span>}
       </button>
@@ -46,7 +46,7 @@ export function Stepper({ slug, size, moq = 1, className }) {
         onClick={() => setQty(slug, size, qty - moq)}
         className="grid size-11 place-items-center rounded-full text-ink-2 hover:text-ink"
       >
-        <Minus className="size-4" />
+        <Icon name="minus" className="size-4" />
       </button>
       <span className="min-w-9 text-center font-bold tabular-nums text-ink">{qty}</span>
       <button
@@ -55,7 +55,7 @@ export function Stepper({ slug, size, moq = 1, className }) {
         onClick={() => setQty(slug, size, qty + moq)}
         className="grid size-11 place-items-center rounded-full text-ink-2 hover:text-ink"
       >
-        <Plus className="size-4" />
+        <Icon name="plus" className="size-4" />
       </button>
     </div>
   );

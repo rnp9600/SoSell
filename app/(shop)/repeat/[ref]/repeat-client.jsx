@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { X } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { useCart } from '@/lib/cart';
 import { Header } from '@/components/pm/header';
 import { Button } from '@/components/ui/button';
@@ -92,7 +92,7 @@ export default function RepeatClient({ ref_, lines, products }) {
                 }
                 className="grid size-11 shrink-0 place-items-center rounded-full text-ink-3 hover:text-ink"
               >
-                <X className="size-4" />
+                <Icon name="close" className="size-4" />
               </button>
             </li>
           );

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingBag, Trash2 } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { useCart } from '@/lib/cart';
 import { useCanOrder } from '@/lib/session';
 import { Header } from '@/components/pm/header';
@@ -41,7 +41,7 @@ export default function CartClient({ products }) {
       <main>
         <Header title="Your order" />
         <Empty
-          icon={ShoppingBag}
+          icon={(p) => <Icon name="bag" {...p} />}
           title="Nothing in the order yet"
           body={
             dropped > 0
@@ -69,7 +69,7 @@ export default function CartClient({ products }) {
             aria-label="Empty the order"
             className="grid size-11 place-items-center rounded-full text-ink-3 hover:text-bad"
           >
-            <Trash2 className="size-5" />
+            <Icon name="trash" className="size-5" />
           </button>
         }
       />
@@ -115,7 +115,7 @@ export default function CartClient({ products }) {
               onClick={() => setQty(it.slug, it.size, 0)}
               className="grid size-11 shrink-0 place-items-center self-start rounded-full text-ink-3 hover:text-bad"
             >
-              <Trash2 className="size-4" />
+              <Icon name="trash" className="size-4" />
             </button>
           </li>
         ))}

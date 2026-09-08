@@ -1,7 +1,7 @@
 'use client';
 
 import * as Dialog from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
+import { Icon } from './icon';
 import { cn } from '@/lib/utils';
 
 /** A bottom sheet — for a DECISION, never for a destination.
@@ -45,7 +45,7 @@ export function Sheet({ open, onOpenChange, title, description, children, footer
               aria-label="Close"
               className="-mr-2 grid size-11 shrink-0 place-items-center rounded-full text-ink-3 hover:bg-surface-2 hover:text-ink"
             >
-              <X className="size-5" />
+              <Icon name="close" className="size-5" />
             </Dialog.Close>
           </div>
 

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { FileText, Wallet } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { supabaseServer, currentUser, isDealer } from '@/lib/supabase/server';
 import { Header } from '@/components/pm/header';
 import { AgingBadge } from '@/components/pm/aging-badge';
@@ -48,7 +48,7 @@ export default async function LedgerPage() {
       <main>
         <Header title="Your account with us" back="/account" />
         <Empty
-          icon={Wallet}
+          icon={(p) => <Icon name="wallet" {...p} />}
           title="Nothing on your account yet"
           body={`When ${FIRM.legalName} raises a bill or takes a payment, it will appear here.`}
         />
@@ -128,7 +128,7 @@ export default async function LedgerPage() {
         </div>
 
         {withBalance.length === 0 ? (
-          <Empty icon={FileText} title="Nothing on the statement yet" />
+          <Empty icon={(p) => <Icon name="pdf" {...p} />} title="Nothing on the statement yet" />
         ) : (
           <ul className="divide-y divide-line border-y border-line">
             {withBalance.map((r, i) => (

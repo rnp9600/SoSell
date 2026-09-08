@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
+import { Icon } from './icon';
 import { cn } from '@/lib/utils';
 
 /** A page header. `back` is a real href, not history.back().
@@ -23,7 +23,7 @@ export function Header({ title, back, actions, className }) {
           aria-label="Back"
           className="grid size-11 shrink-0 place-items-center rounded-full text-ink-2 hover:bg-surface-2 hover:text-ink"
         >
-          <ChevronLeft className="size-5" />
+          <Icon name="back" className="size-5" />
         </Link>
       )}
       <h1 className={cn('flex-1 truncate font-bold text-ink', !back && 'pl-3')}>{title}</h1>

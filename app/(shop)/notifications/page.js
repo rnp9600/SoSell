@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Bell } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { supabaseServer, currentUser } from '@/lib/supabase/server';
 import { Header } from '@/components/pm/header';
 import { Empty } from '@/components/pm/empty';
@@ -22,7 +22,7 @@ export default async function NotificationsPage() {
     <main>
       <Header title="Notifications" back="/account" />
       {list.length === 0 ? (
-        <Empty icon={Bell} title="Nothing yet"
+        <Empty icon={(p) => <Icon name="bell" {...p} />} title="Nothing yet"
                body="Messages from the office, and anything that needs your attention, will be here." />
       ) : (
         <>

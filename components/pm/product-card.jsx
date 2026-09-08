@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Heart } from 'lucide-react';
+import { Icon } from './icon';
 import { ProductImage } from './product-image';
 import { Price } from './price';
 import { Stepper } from './stepper';
@@ -51,7 +51,8 @@ export function ProductCard({ product: p, offer = null }) {
           onClick={() => toggle(p.slug)}
           className="absolute right-2 top-2 z-20 grid size-11 place-items-center rounded-full bg-surface/85 backdrop-blur transition-colors hover:bg-surface"
         >
-          <Heart className={cn('size-5', saved ? 'fill-bad text-bad' : 'text-ink-3')} />
+          <Icon name="heart" fill={saved ? 'currentColor' : 'none'}
+                className={cn('size-5', saved ? 'text-bad' : 'text-ink-3')} />
         </button>
       </div>
 

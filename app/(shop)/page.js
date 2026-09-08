@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Search } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { getCatalogue, visible } from '@/lib/catalogue';
 import { currentUser, roleOf } from '@/lib/supabase/server';
 import { supabaseServer } from '@/lib/supabase/server';
@@ -57,7 +57,7 @@ export default async function HomePage() {
           href="/search"
           className="flex min-h-tap items-center gap-2 rounded-full border border-line bg-surface-2 px-4 text-ink-3"
         >
-          <Search className="size-5" />
+          <Icon name="search" className="size-5" />
           Search {shown.length} products
         </Link>
       </div>

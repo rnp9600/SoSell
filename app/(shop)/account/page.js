@@ -1,8 +1,5 @@
 import Link from 'next/link';
-import {
-  Receipt, Heart, ShoppingBag, Settings, HelpCircle, MessageCircle,
-  LayoutGrid, ClipboardCheck, Bell, Wallet,
-} from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { currentUser, roleOf, isAdmin, isOffice, isDealer } from '@/lib/supabase/server';
 import { supabaseServer } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
@@ -17,10 +14,10 @@ const ROLE_LABEL = {
   shop_owner: 'Dealer', end_customer: 'Customer', guest: 'Browsing',
 };
 
-function Row({ href, icon: Icon, label, sub, badge }) {
+function Row({ href, icon, label, sub, badge }) {
   return (
     <Link href={href} className="flex min-h-tap items-center gap-3 px-5 py-3.5">
-      <Icon className="size-5 shrink-0 text-ink-3" />
+      <Icon name={icon} className="size-5 shrink-0 text-ink-3" />
       <span className="flex-1">
         <span className="block font-semibold text-ink">{label}</span>
         {sub && <span className="block text-sm text-ink-3">{sub}</span>}
@@ -74,8 +71,8 @@ export default async function AccountPage() {
           </Button>
         </div>
         <nav className="mt-6 divide-y divide-line border-y border-line">
-          <Row href="/saved" icon={Heart} label="Saved" />
-          <Row href="/help" icon={HelpCircle} label="Help" />
+          <Row href="/saved" icon="heart" label="Saved" />
+          <Row href="/help" icon="info" label="Help" />
         </nav>
       </main>
     );
@@ -118,23 +115,23 @@ export default async function AccountPage() {
       </header>
 
       <nav className="divide-y divide-line border-y border-line">
-        <Row href="/orders" icon={Receipt} label="Your orders" />
+        <Row href="/orders" icon="receipt" label="Your orders" />
         {isDealer(me) && (
           <>
-            <Row href="/cart" icon={ShoppingBag} label="Your current order" />
-            <Row href="/account/ledger" icon={Wallet} label="Your account with us"
+            <Row href="/cart" icon="bag" label="Your current order" />
+            <Row href="/account/ledger" icon="wallet" label="Your account with us"
                  sub="What you owe, bills, receipts and cheques" />
           </>
         )}
-        <Row href="/saved" icon={Heart} label="Saved" />
+        <Row href="/saved" icon="heart" label="Saved" />
       </nav>
 
       {canApprove && (
         <>
           <h2 className="px-5 pb-2 pt-6 text-sm font-bold text-ink-2">Office queue</h2>
           <nav className="divide-y divide-line border-y border-line">
-            <Row href="/approvals" icon={ClipboardCheck} label="Approvals" badge={pending} />
-            <Row href="/notifications" icon={Bell} label="Notifications" />
+            <Row href="/approvals" icon="shield" label="Approvals" badge={pending} />
+            <Row href="/notifications" icon="bell" label="Notifications" />
           </nav>
         </>
       )}
@@ -143,19 +140,19 @@ export default async function AccountPage() {
         <>
           <h2 className="px-5 pb-2 pt-6 text-sm font-bold text-ink-2">{FIRM.legalName}</h2>
           <nav className="divide-y divide-line border-y border-line">
-            <Row href="/office" icon={LayoutGrid} label="Office" sub="Products, routes, collections, tasks" />
+            <Row href="/office" icon="grid" label="Office" sub="Products, routes, collections, tasks" />
           </nav>
         </>
       )}
 
       <nav className="mt-6 divide-y divide-line border-y border-line">
-        <Row href="/settings" icon={Settings} label="Settings" />
-        <Row href="/help" icon={HelpCircle} label="Help" />
+        <Row href="/settings" icon="cog" label="Settings" />
+        <Row href="/help" icon="info" label="Help" />
         <a
           href={`https://wa.me/${FIRM.whatsapp}`}
           className="flex min-h-tap items-center gap-3 px-5 py-3.5"
         >
-          <MessageCircle className="size-5 shrink-0 text-ink-3" />
+          <Icon name="wa" className="size-5 shrink-0 text-ink-3" />
           <span className="flex-1 font-semibold text-ink">Message us</span>
         </a>
       </nav>

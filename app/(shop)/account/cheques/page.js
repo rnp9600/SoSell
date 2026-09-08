@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { Landmark } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { supabaseServer, currentUser, isDealer } from '@/lib/supabase/server';
 import { Header } from '@/components/pm/header';
 import { Empty } from '@/components/pm/empty';
@@ -38,7 +38,7 @@ export default async function ChequesPage() {
       <Header title="Your cheques" back="/account/ledger" />
 
       {cheques.length === 0 ? (
-        <Empty icon={Landmark} title="No cheques on record"
+        <Empty icon={(p) => <Icon name="bank" {...p} />} title="No cheques on record"
                body="Any cheque you give us will be listed here with its clearing date." />
       ) : (
         <>

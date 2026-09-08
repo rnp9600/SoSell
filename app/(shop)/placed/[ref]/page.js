@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Check, AlertTriangle, Home } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { FIRM } from '@/lib/config';
 import { Button } from '@/components/ui/button';
 
@@ -29,7 +29,7 @@ export default async function PlacedPage({ params, searchParams }) {
           recorded ? 'bg-ok-wash text-ok' : 'bg-warn-wash text-warn'
         }`}
       >
-        {recorded ? <Check className="size-8" /> : <AlertTriangle className="size-8" />}
+        <Icon name={recorded ? 'shield' : 'info'} className="size-8" />
       </div>
 
       <h1 className="mt-5 text-2xl font-extrabold text-ink">
@@ -57,7 +57,7 @@ export default async function PlacedPage({ params, searchParams }) {
         )}
         <Button asChild variant="secondary" size="lg" block>
           <Link href="/">
-            <Home className="size-4" />
+            <Icon name="home" className="size-4" />
             Back to the shop
           </Link>
         </Button>

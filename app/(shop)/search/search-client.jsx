@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect, useDeferredValue } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Search as SearchIcon, X } from 'lucide-react';
+import { Icon } from '@/components/pm/icon';
 import { search as runSearch, suggest } from '@/lib/search';
 import { ProductGrid } from '@/components/pm/product-card';
 import { Empty } from '@/components/pm/empty';
@@ -58,7 +58,7 @@ export default function SearchClient({ products }) {
         style={{ paddingTop: 'calc(0.5rem + var(--safe-t))' }}
       >
         <div className="flex items-center gap-2 rounded-full border border-line bg-surface-2 px-4">
-          <SearchIcon className="size-5 shrink-0 text-ink-3" />
+          <Icon name="search" className="size-5 shrink-0 text-ink-3" />
           <input
             autoFocus
             value={q}
@@ -74,7 +74,7 @@ export default function SearchClient({ products }) {
               onClick={() => setQ('')}
               className="grid size-8 place-items-center rounded-full text-ink-3 hover:text-ink"
             >
-              <X className="size-4" />
+              <Icon name="close" className="size-4" />
             </button>
           )}
         </div>
@@ -147,7 +147,7 @@ export default function SearchClient({ products }) {
 
         {typed && result.hits.length === 0 && (
           <Empty
-            icon={SearchIcon}
+            icon={(p) => <Icon name="search" {...p} />}
             title={`Nothing matches "${typed}"`}
             body="We may stock it under another name — try the brand, the code, or what you would call it at the counter. Either way we have noted the search."
           />
