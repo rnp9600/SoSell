@@ -3,6 +3,7 @@ import './globals.css';
 import { APP, FIRM } from '@/lib/config';
 import { THEME_BOOTSTRAP, IMG_FALLBACK } from '@/lib/theme';
 import { RegisterSW } from '@/components/pm/register-sw';
+import { SessionShim } from '@/components/pm/session-shim';
 
 // Self-hosted through next/font, which also removes the render-blocking
 // Google Fonts <link> the catalogue currently carries.
@@ -49,6 +50,7 @@ export default function RootLayout({ children }) {
       <body>
         {children}
         <RegisterSW />
+        <SessionShim />
       </body>
     </html>
   );

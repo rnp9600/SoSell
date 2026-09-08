@@ -160,19 +160,27 @@ permanently, and a denial is final.
 | **Seed the receipt counter** | Going live mid-year means setting `voucher_sequence` from the last number the office actually issued, or the app starts at `Mob/1` beside a paper book at `Mob/812`. A human should read the number aloud. |
 | **The four `v3`-only features** | Writing a review, editing your own profile and photo, the consumer shop directory, and retail mode. See `PLAN.md`. |
 | **`aging_days_legacy`** | Ship the old and new aging side by side for a week with a one-screen explanation, so the office can see *why* loyal customers moved from Critical to On Track and say whether they agree. |
-| **Deploy** | Nothing has been deployed. The live catalogue read can only be confirmed from a deploy — see environment fact 1 above. |
+| **Deploy** | Blocked on one permission. Vercel's GitHub App cannot see `rnp9600/SoSell` — the repo is private and has not been shared with it. Grant it at **vercel.com → Settings → Git → GitHub → Configure**, add SoSell to the allowed repositories, then the project links and deploys from `claude/repo-chandler-integration-7whgjj` (which is this repo's default branch, so no merge is needed). The Supabase URL and publishable key have defaults, so no environment variable is required for a first deploy. |
 
 ## Before the cutover
 
-Two things in `PLAN.md`'s risk list are **not optional** and are not done:
+**The session shim is built** (`components/pm/session-shim.jsx`, mounted in the
+root layout). It reads `v3_sb_auth` once, hands it to `setSession()` so the
+cookie is written, and removes the key. Without it every dealer would be
+signed out the morning the domain moves — and signing back in costs a real SMS
+each.
 
-1. **The session shim.** Read `v3_sb_auth` from localStorage once, call
-   `setSession()` so the cookie is written, then remove the key. Without it,
-   every dealer is signed out on cutover day.
-   **Acceptance test**: fill a basket on the live site, deploy SoSell to the
-   same hostname, reload — basket intact, still signed in.
-2. **Never redirect `/v4/`.** Already handled, and worth re-checking after any
-   change to `next.config.js`.
+`tests/cutover.test.mjs` asserts the code is in place, that V3's localStorage
+keys have not been renamed, that `/v4/` is a rewrite rather than a redirect,
+and that the service worker caches nothing. **Two things it cannot check, and
+which matter most:**
+
+1. **Fill a basket on the live catalogue, deploy SoSell to the same hostname,
+   reload.** Basket intact, still signed in. Skip this and you find out from
+   the dealers.
+2. **Seed `catalog.voucher_sequence`** from the last receipt number the office
+   actually issued, or the app starts at `Mob/1` beside a paper book at
+   `Mob/812`. A human should read the number aloud.
 
 ---
 

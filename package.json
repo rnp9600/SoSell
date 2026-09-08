@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "check:secrets": "node scripts/check-secrets.mjs"
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "test": "node tests/search.test.mjs && node tests/money.test.mjs && node tests/cutover.test.mjs",
+    "test:visual": "node tests/visual.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "5.1.1",
