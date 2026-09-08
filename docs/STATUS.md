@@ -1,7 +1,8 @@
 # Where things stand
 
-Last updated **2026-09-06**. Read `PLAN.md` first if you have not — this file
-assumes it. Phases 0 and 1 are done; **Phase 2 is next.**
+Last updated **2026-09-08**. Read `PLAN.md` first if you have not — this file
+assumes it. Phases 0-5 and 7 are done and **the app is deployed**; the office
+catalogue tools and the real ledger import are what is left.
 
 ---
 
@@ -160,7 +161,39 @@ permanently, and a denial is final.
 | **Seed the receipt counter** | Going live mid-year means setting `voucher_sequence` from the last number the office actually issued, or the app starts at `Mob/1` beside a paper book at `Mob/812`. A human should read the number aloud. |
 | **The four `v3`-only features** | Writing a review, editing your own profile and photo, the consumer shop directory, and retail mode. See `PLAN.md`. |
 | **`aging_days_legacy`** | Ship the old and new aging side by side for a week with a one-screen explanation, so the office can see *why* loyal customers moved from Critical to On Track and say whether they agree. |
-| **Deploy** | Blocked on one permission. Vercel's GitHub App cannot see `rnp9600/SoSell` — the repo is private and has not been shared with it. Grant it at **vercel.com → Settings → Git → GitHub → Configure**, add SoSell to the allowed repositories, then the project links and deploys from `claude/repo-chandler-integration-7whgjj` (which is this repo's default branch, so no merge is needed). The Supabase URL and publishable key have defaults, so no environment variable is required for a first deploy. |
+| **Three stray Vercel projects** | `sosell`, `sosell-app` and `sosell-pm` were created while diagnosing the deploy and are linked to this same repository, so every push builds the app four times. **Delete all three** at vercel.com → each project → Settings → Delete Project. `so-sell` is the one to keep. |
+
+## It is deployed
+
+**Live: <https://vercel.com/patelmarketing/so-sell>** — the project dashboard,
+which shows the current production domain. The build that first went green is
+`02c0fb6`, at `so-sell-65gdmq4tw-patelmarketing.vercel.app`.
+
+No environment variable was needed for the first deploy: the Supabase URL and
+publishable key have defaults in `lib/config.js`, and the publishable key is
+public by design. **Before the reminder ladder or web push can run**, set these
+five in the project's environment settings — nothing else in the app reads
+them, and `yarn check:secrets` is what keeps it that way:
+
+| | |
+|---|---|
+| `CRON_SECRET` | any long random string; `/api/cron/reminders` compares it in constant time |
+| `SUPABASE_SECRET_KEY` | the revocable `sb_secret_…` form, never a `NEXT_PUBLIC_*` name |
+| `VAPID_PRIVATE_KEY` · `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | `npx web-push generate-vapid-keys` |
+| `VAPID_CONTACT` | `mailto:` address the push services complain to |
+
+### Why the first three deploys failed
+
+They failed *in the same second they were created*, which is the signature of a
+configuration rejection rather than a compile error — the build never started.
+The cause was `vercel.json`: each cron entry carried a `"//"` key holding a note
+about its schedule. **Vercel validates `vercel.json` against a strict schema and
+refuses any key it does not recognise.** JSON has no comments and Vercel does
+not pretend otherwise. The notes now live at the top of the two route handlers
+they describe.
+
+The lesson generalises: `vercel.json` is not a place to explain anything. If a
+number in it needs a reason, the reason goes in the code the number points at.
 
 ## Before the cutover
 
