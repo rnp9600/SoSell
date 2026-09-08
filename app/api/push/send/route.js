@@ -4,6 +4,12 @@ import { APP } from '@/lib/config';
 
 /** Drain the push outbox.
  *
+ *  Scheduled by vercel.json as `30 4 * * *`, but that run is only a safety
+ *  net: the composer calls this route directly when a message is sent, so
+ *  the cron catches nothing but what failed to go out. A Hobby plan allows
+ *  one run a day; on Pro, tighten it to every five minutes so a failed
+ *  push retries within minutes rather than tomorrow.
+ *
  *  This is one of the three places the service-role key may appear, and the
  *  reason is structural rather than convenient: delivering a push means
  *  reading OTHER PEOPLE's subscription rows, which row-level security

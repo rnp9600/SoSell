@@ -4,6 +4,10 @@ import { currentFY } from '@/lib/fy';
 
 /** The aging reminder ladder.
  *
+ *  Scheduled by vercel.json as `0 4 * * *` — 04:00 UTC, which is 09:30 IST.
+ *  Vercel validates vercel.json against a strict schema and rejects any key
+ *  it does not know, so the reason for that number has to live here.
+ *
  *  The prototype had eighteen editable templates including a full
  *  aging_30/60/75/90/120/180 ladder — and no scheduler, and no code that read
  *  a template when sending. Every notification passed a hardcoded string. The
